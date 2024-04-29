@@ -1,3 +1,4 @@
+from datetime import date
 from django.db import models
 
 
@@ -15,13 +16,33 @@ class Department(models.Model):
 
     def __str__(self):
         return self.name
+    
+class Compensation(models.Model):
+    name = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.name
+
 
 class Employee(models.Model):
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
     contact = models.OneToOneField(Contact, on_delete=models.CASCADE, null=True)
     department = models.ForeignKey(Department, on_delete=models.CASCADE, null=True)
+    compensation = models.ManyToManyField(Compensation)
 
     def __str__(self):
         return f'{self.first_name} {self.last_name}'
 
+class Job(models.Model):
+    title= models.CharField(max_length=255)
+    employes = models.ManyToManyField(Employee, through='Assigment')
+   
+    def __str__(self):
+        return self.title
+    
+class Assigment(models.Model):
+    employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
+    position = models.ForeignKey(Job, on_delete=models.CASCADE)
+    begin_date = models.DateField()
+    end_date = models.DateField(default=date(9999, 12, 31))
